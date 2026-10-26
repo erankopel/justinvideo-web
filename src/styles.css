@@ -1,0 +1,1221 @@
+:root {
+  color-scheme: light dark;
+  --background: #ffffff;
+  --surface: #f3f3f7;
+  --text: #1b1b1f;
+  --muted: #55555c;
+  --accent: #3b4cca;
+  --accent-text: #ffffff;
+  --danger: #b3261e;
+  --rule: #d6d6dc;
+  --clip-0: #4c5bd0;
+  --clip-1: #1c7c54;
+  --clip-2: #a8541f;
+  --clip-text: #ffffff;
+  font-family: system-ui, sans-serif;
+  line-height: 1.5;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #121316;
+    --surface: #1d1e23;
+    --text: #e6e6ea;
+    --muted: #a8a8b0;
+    --accent: #aab4ff;
+    --accent-text: #121316;
+    --danger: #ffb4ab;
+    --rule: #34353b;
+    --clip-0: #6a78e0;
+    --clip-1: #3aa377;
+    --clip-2: #d07a3e;
+    --clip-text: #101114;
+  }
+}
+
+/* Dragging the page down from its top reloads it in a phone's browser, in the middle of an edit or an export: it is not wanted here. */
+html {
+  overscroll-behavior-y: none;
+}
+
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--text);
+  /* Two quick taps on a button, as on Later or on a stepper, are two presses and not a zoom of the page. A pinch still zooms it. */
+  touch-action: manipulation;
+}
+
+a {
+  color: var(--accent);
+}
+
+main {
+  box-sizing: border-box;
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+/* Lines of text stay readable on a wide page; pictures, the timeline and the lists may use the width. */
+main > p,
+main > ul.problems {
+  max-width: 70ch;
+}
+
+header.site,
+footer.site {
+  box-sizing: border-box;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 0.5rem 1rem;
+}
+
+footer.site {
+  justify-content: flex-start;
+  gap: 0.5rem 1.5rem;
+}
+
+header.site .brand {
+  font-size: 1.25rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+button {
+  min-height: 44px;
+  padding: 0 1rem;
+  border: 2px solid var(--accent);
+  border-radius: 0.5rem;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+}
+
+a.button {
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  min-height: 44px;
+  padding: 0 1rem;
+  border: 2px solid var(--accent);
+  border-radius: 0.5rem;
+  color: var(--text);
+  text-decoration: none;
+}
+
+a.button.primary {
+  background: var(--accent);
+  color: var(--accent-text);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+button.primary,
+button[aria-pressed='true'] {
+  background: var(--accent);
+  color: var(--accent-text);
+}
+
+button.danger {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.hint,
+.facts {
+  color: var(--muted);
+}
+
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+ul.projects {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: 1rem;
+  padding: 0;
+  list-style: none;
+}
+
+li.project {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.75rem;
+  border: 1px solid var(--rule);
+  border-radius: 0.75rem;
+  background: var(--surface);
+}
+
+li.project.damaged {
+  border-color: var(--danger);
+}
+
+li.project a.open {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  color: inherit;
+  text-decoration: none;
+}
+
+li.project .name {
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+li.project .actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-block-start: 0.5rem;
+}
+
+.thumb {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: contain;
+  border-radius: 0.5rem;
+  background: #000;
+}
+
+ul.problems {
+  padding-inline-start: 1.25rem;
+  color: var(--danger);
+}
+
+progress {
+  width: 100%;
+}
+
+dialog {
+  /* The same width as before (28 rem of room inside), now that the padding and the border are counted in the box, which they must
+     be for the height below to be the height of the dialog. */
+  box-sizing: border-box;
+  max-width: calc(28rem + 2rem + 2px);
+  /* No padding under the content: the buttons that stay at the bottom of a tall dialog are flush with its edge, with nothing
+     of the form showing between them and it. The space under the content is the body's. */
+  padding: 1rem 1rem 0;
+  /* Never taller than the window, as on a laptop whose browser leaves 600 pixels or so: what does not fit scrolls, and the
+     buttons of a form stay in sight (below). The first line is for the browsers that do not know the second. */
+  max-height: calc(100vh - 1.5rem);
+  max-height: calc(100dvh - 1.5rem);
+  overflow: auto;
+  border: 1px solid var(--rule);
+  border-radius: 0.75rem;
+  background: var(--background);
+  color: var(--text);
+}
+
+dialog::backdrop {
+  background: rgb(0 0 0 / 0.5);
+}
+
+dialog .dialog-body {
+  padding-block-end: 1rem;
+}
+
+dialog h2 {
+  margin-block-start: 0;
+}
+
+dialog label {
+  display: block;
+}
+
+dialog input[type='text'] {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 44px;
+  margin-block: 0.25rem 1rem;
+  padding: 0 0.5rem;
+  border: 2px solid var(--rule);
+  border-radius: 0.5rem;
+  background: var(--surface);
+  color: inherit;
+  font: inherit;
+}
+
+ol.clips,
+ul.sources {
+  padding-inline-start: 1.5rem;
+}
+
+.editor {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-block: 1rem;
+}
+
+.preview {
+  position: relative;
+  box-sizing: border-box;
+  align-self: center;
+  /* As wide as the window lets it be, and no taller than 45 percent of it: its shape is the picture's (--aspect, set by the editor). */
+  width: min(100%, calc(var(--aspect, 1.78) * 45vh));
+  max-width: 100%;
+  overflow: hidden;
+  border-radius: 0.5rem;
+  background: #000;
+}
+
+.preview video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #000;
+}
+
+/* The video that is not shown stays in place underneath, not hidden: Firefox does not paint a hidden video when it seeks. */
+.preview video {
+  z-index: 0;
+}
+
+.preview video[data-active='true'] {
+  z-index: 1;
+}
+
+.preview .empty {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  padding: 1rem;
+  color: #ddd;
+  text-align: center;
+}
+
+.transport {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem 1.5rem;
+}
+
+button.icon {
+  display: inline-grid;
+  place-items: center;
+  min-width: 44px;
+  padding: 0;
+}
+
+.timecode {
+  font-variant-numeric: tabular-nums;
+  font-family: ui-monospace, monospace;
+}
+
+.timeline-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.timeline-block .zoom {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.25rem;
+}
+
+.timeline {
+  position: relative;
+  overflow: hidden;
+  border-radius: 0.5rem;
+  background: var(--surface);
+  cursor: grab;
+  touch-action: none;
+  /* Safari takes only the prefixed name: without it a drag across the labels selects them, and the next press on them starts a drag of the text. */
+  -webkit-user-select: none;
+  user-select: none;
+  /* A press that is held, to pick a clip up, is not a request for a menu of the browser's. */
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.timeline .ruler {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: var(--ruler, 28px);
+  border-bottom: 1px solid var(--rule);
+  pointer-events: none;
+}
+
+.timeline .tick {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  padding-inline-start: 4px;
+  border-inline-start: 1px solid var(--muted);
+  color: var(--muted);
+  font-size: 0.7rem;
+  line-height: var(--ruler, 28px);
+  white-space: nowrap;
+}
+
+.timeline .tick.major {
+  border-inline-start-color: var(--text);
+}
+
+.timeline .extent {
+  position: absolute;
+  border-radius: 0.4rem;
+  background: var(--rule);
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.timeline .clip {
+  position: absolute;
+  box-sizing: border-box;
+  overflow: hidden;
+  border-radius: 0.4rem;
+  background: var(--clip-0);
+  color: var(--clip-text);
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.timeline .clip.s1 {
+  background: var(--clip-1);
+}
+
+.timeline .clip.s2 {
+  background: var(--clip-2);
+}
+
+.timeline .clip .strip {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  display: block;
+  pointer-events: none;
+}
+
+/* On the pictures the label sits on a dark patch, so it can be read over any of them. */
+.timeline .clip .label {
+  position: absolute;
+  inset-block-start: 6px;
+  inset-inline-start: 6px;
+  padding: 0 5px;
+  border-radius: 3px;
+  background: rgb(0 0 0 / 0.6);
+  color: #fff;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.timeline .clip.selected {
+  outline: 3px solid var(--text);
+  outline-offset: -3px;
+}
+
+/* A clip that has been picked up, by pressing and holding it, is lifted off the track, over the others. */
+.timeline .clip.moving {
+  z-index: 3;
+  cursor: grabbing;
+  box-shadow: 0 4px 14px rgb(0 0 0 / 0.5);
+  opacity: 0.92;
+}
+
+.timeline .playhead {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 50%;
+  width: 2px;
+  margin-inline-start: -1px;
+  background: var(--danger);
+  pointer-events: none;
+}
+
+.project-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+}
+
+.project-bar h1 {
+  flex: 1;
+  margin: 0;
+  font-size: 1.25rem;
+  overflow-wrap: anywhere;
+}
+
+.timeline .clip .handle {
+  position: absolute;
+  inset-block: 0;
+  width: 12px;
+  background: var(--text);
+  pointer-events: none;
+}
+
+.timeline .clip .handle::after {
+  content: '';
+  position: absolute;
+  inset-block: 30%;
+  inset-inline-start: 50%;
+  width: 2px;
+  margin-inline-start: -1px;
+  background: var(--background);
+}
+
+.timeline .clip .handle.start {
+  inset-inline-start: 0;
+}
+
+.timeline .clip .handle.end {
+  inset-inline-end: 0;
+}
+
+.timeline .range {
+  position: absolute;
+  bottom: 0;
+  background: color-mix(in srgb, var(--danger) 25%, transparent);
+  border-inline: 2px solid var(--danger);
+  pointer-events: none;
+}
+
+.timeline .range-handle {
+  position: absolute;
+  inset-block: 30%;
+  width: 8px;
+  border-radius: 3px;
+  background: var(--danger);
+}
+
+.timeline .range-handle.start {
+  inset-inline-start: -4px;
+}
+
+.timeline .range-handle.end {
+  inset-inline-end: -4px;
+}
+
+.timeline .guide {
+  position: absolute;
+  inset-block: 0;
+  width: 2px;
+  margin-inline-start: -1px;
+  background: var(--accent);
+  pointer-events: none;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.notice {
+  min-height: 1.5em;
+  margin: 0;
+  color: var(--danger);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+canvas.captions {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.notice.ok {
+  color: var(--muted);
+}
+
+.timeline .cue {
+  position: absolute;
+  box-sizing: border-box;
+  overflow: hidden;
+  padding-inline: 4px;
+  border-radius: 4px;
+  background: var(--text);
+  color: var(--background);
+  font-size: 0.65rem;
+  line-height: 16px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+
+.timeline .cue.movable {
+  cursor: grab;
+}
+
+/* A title that is being dragged is lifted off the row, as a piece of music is. */
+.timeline .cue.moving {
+  z-index: 2;
+  cursor: grabbing;
+  box-shadow: 0 3px 10px rgb(0 0 0 / 0.45);
+  outline: 2px solid var(--accent);
+}
+
+.timeline .cue:focus-visible {
+  outline: 2px solid var(--accent);
+}
+
+/* A grid and not a column of flex items: WebKit lays a fieldset that is a flex item out with its legend counted twice the first
+   time, a line too tall, and the next layout (the box being typed in or left) takes the line away, so the first press on a
+   choice or a button lands on what has moved under it. */
+form.dialog-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.75rem;
+  min-width: min(24rem, 80vw);
+}
+
+form.dialog-form .field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+form.dialog-form textarea {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0.5rem;
+  border: 2px solid var(--rule);
+  border-radius: 0.5rem;
+  background: var(--surface);
+  color: inherit;
+  font: inherit;
+  resize: vertical;
+}
+
+form.dialog-form .count {
+  align-self: flex-end;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+form.dialog-form fieldset {
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--rule);
+  border-radius: 0.5rem;
+}
+
+form.dialog-form .choice {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+}
+
+form.dialog-form .choice label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 32px;
+}
+
+form.dialog-form .stepper {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-block: 0.25rem;
+}
+
+/* The words come first and the two buttons stay together: where the dialog is narrow they go on a line of their own. */
+form.dialog-form .stepper > :first-child {
+  flex: 1 1 9rem;
+}
+
+form.dialog-form .stepper-buttons {
+  display: inline-flex;
+  gap: 0.5rem;
+}
+
+.timeline .audio-bar {
+  position: absolute;
+  box-sizing: border-box;
+  overflow: hidden;
+  padding-inline: 4px;
+  border-radius: 4px;
+  background: var(--clip-1);
+  color: var(--clip-text);
+  font-size: 0.65rem;
+  line-height: 24px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  cursor: grab;
+}
+
+/* A piece that is being dragged is lifted off the row. */
+.timeline .audio-bar.moving {
+  z-index: 2;
+  cursor: grabbing;
+  box-shadow: 0 3px 10px rgb(0 0 0 / 0.45);
+  outline: 2px solid var(--text);
+}
+
+.timeline .audio-bar.voiceover {
+  background: var(--clip-2);
+}
+
+.timeline .audio-bar .wave {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  display: block;
+  pointer-events: none;
+}
+
+/* The name sits on a dark patch, so it can be read over the waveform. */
+.timeline .audio-bar [dir='auto'] {
+  position: relative;
+  padding: 0 4px;
+  border-radius: 3px;
+  background: rgb(0 0 0 / 0.55);
+  color: #fff;
+}
+
+.timeline .audio-bar:focus-visible {
+  outline: 2px solid var(--accent);
+}
+
+form.dialog-form .volume {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+form.dialog-form .volume label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+form.dialog-form .volume input[type='range'] {
+  width: 100%;
+}
+
+form.dialog-form .presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.recording {
+  align-self: center;
+  color: var(--danger);
+  font-variant-numeric: tabular-nums;
+}
+
+.meter-wrap {
+  align-self: center;
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.5rem;
+}
+
+.meter {
+  display: inline-block;
+  inline-size: 8rem;
+  block-size: 0.75rem;
+  overflow: hidden;
+  border: 1px solid var(--rule);
+  border-radius: 0.375rem;
+}
+
+.meter-bar {
+  display: block;
+  block-size: 100%;
+  background: var(--accent);
+}
+
+.meter[data-state='unavailable'] {
+  opacity: 0.5;
+}
+
+form.dialog-form .buttons.test {
+  align-items: center;
+}
+
+/* The details of a failure, to copy by hand where the browser would not copy them. */
+div.dialog-form textarea {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0.5rem;
+  border: 2px solid var(--rule);
+  border-radius: 0.5rem;
+  background: var(--surface);
+  color: inherit;
+  font: 0.75rem ui-monospace, monospace;
+}
+
+form.dialog-form progress,
+div.dialog-form progress {
+  width: 100%;
+}
+
+div.dialog-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-width: min(24rem, 80vw);
+}
+
+footer.site .update {
+  margin-inline-start: auto;
+}
+
+/* The buttons of a form in a dialog that is taller than the window stay at the bottom of it while the rest scrolls. */
+form.dialog-form > .buttons:last-child {
+  position: sticky;
+  inset-block-end: 0;
+  z-index: 1;
+  padding-block: 0.5rem;
+  background: var(--background);
+}
+
+/* A window less than 760 pixels high, as a laptop's often is: the dialogs are laid out closer, so that they fit whole in a window of
+   650 pixels, and in one of 600 scroll only a little. */
+@media (max-height: 760px) {
+  dialog {
+    padding: 0.75rem 1rem 0;
+  }
+
+  dialog .dialog-body {
+    padding-block-end: 0.75rem;
+  }
+
+  dialog h2 {
+    margin-block-end: 0.5rem;
+    font-size: 1.2rem;
+  }
+
+  form.dialog-form {
+    gap: 0.5rem;
+  }
+
+  form.dialog-form fieldset {
+    padding-block: 0.25rem 0.375rem;
+  }
+
+  form.dialog-form textarea {
+    height: 4.25rem;
+  }
+
+  form.dialog-form .choice label {
+    min-height: 28px;
+  }
+}
+
+/* A finger is wider than a pointer: where the screen is touched, what has to be hit is larger, and so is the small print on the
+   timeline. The rows of titles and music are made taller by the timeline itself, which lays them out. */
+@media (pointer: coarse) {
+  form.dialog-form .choice label {
+    min-height: 40px;
+  }
+
+  form.dialog-form .volume input[type='range'] {
+    min-height: 44px;
+  }
+
+  .timeline .tick {
+    font-size: 0.75rem;
+  }
+
+  .timeline .cue,
+  .timeline .audio-bar {
+    font-size: 0.8rem;
+  }
+}
+
+/* ---- The editor on a narrow screen, and on a touch screen on its side ---- */
+
+/* On a wide screen the wrappers add nothing: the picture and the tools are laid out as the page's own parts, and there are no tabs. */
+.picture,
+.tools {
+  display: contents;
+}
+
+.tool-tabs {
+  display: none;
+}
+
+.editor > .notice {
+  order: 1;
+}
+
+/* The buttons are shown a set at a time, chosen from the tabs above them, so that the tools take a line or two and not eight. */
+@media (max-width: 700px), (pointer: coarse) and (max-height: 520px) {
+  .tool-tabs {
+    display: flex;
+    gap: 0.25rem;
+  }
+
+  .tool-tabs button {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 0 0.25rem;
+  }
+
+  .tool-tabs button[aria-selected='true'] {
+    background: var(--accent);
+    color: var(--accent-text);
+  }
+
+  .editor[data-tab='sound'] .clip-tools,
+  .editor:not([data-tab='sound']) .sound-tools {
+    display: none;
+  }
+
+  .editor[data-tab='edit'] .clip-tools > button[data-tab]:not([data-tab='edit']),
+  .editor[data-tab='trim'] .clip-tools > button[data-tab]:not([data-tab='trim']),
+  .editor[data-tab='text'] .clip-tools > button[data-tab]:not([data-tab='text']) {
+    display: none;
+  }
+}
+
+/* A phone, held upright or on its side: the editor is one screen. The project's own page parts are laid out for it below, the lists
+   under the editor and the language come after it, and what does not fit, on a screen that is short, scrolls with the page. */
+@media (max-width: 700px) and (orientation: portrait), (pointer: coarse) and (max-height: 520px) and (orientation: landscape) {
+  html[data-view='project'] #app {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Across the whole of the screen: in a column of flex items, the automatic side margins of the page's main part would make it only as wide as what it holds. */
+  html[data-view='project'] main {
+    order: 1;
+    align-self: stretch;
+    margin-inline: 0;
+    padding: 0.5rem;
+  }
+
+  html[data-view='project'] header.site {
+    order: 2;
+  }
+
+  html[data-view='project'] footer.site {
+    order: 3;
+  }
+
+  .shell {
+    min-height: calc(100vh - 1rem);
+    min-height: calc(100dvh - 1rem);
+  }
+
+  .project-bar {
+    display: grid;
+    align-items: center;
+    gap: 0 0.75rem;
+  }
+
+  .project-bar > a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  .project-bar h1 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+    font-size: 1.1rem;
+  }
+
+  .project-bar h1 .name {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .project-bar h1 button {
+    flex: none;
+  }
+
+  /* One line that scrolls sideways. */
+  .project-bar > .buttons {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  /* Closer, so that Undo, Redo, Add videos and Export are all in sight on a screen 360 pixels across; Delete is the one to scroll to. */
+  .project-bar > .buttons > button {
+    flex: none;
+    padding-inline: 0.625rem;
+  }
+
+  .editor > .picture {
+    display: grid;
+    place-items: center;
+    min-height: 0;
+    container-type: size;
+    border-radius: 0.5rem;
+    background: #000;
+  }
+
+  /* The picture is as large as the room allows in its own shape, which is the shape the captions are drawn for. */
+  @supports (width: 1cqw) {
+    .picture .preview {
+      width: min(100cqw, calc(100cqh * var(--aspect, 1.78)));
+    }
+  }
+
+  .editor .transport,
+  .editor .timeline-block {
+    display: contents;
+  }
+
+  /* While a voiceover is recorded the line holds the button that ends it, the time and the level, all in sight, and nothing to scroll to. */
+  .editor[data-recording='true'] .sound-tools {
+    flex-wrap: wrap;
+    overflow-x: visible;
+  }
+
+  .editor[data-recording='true'] .sound-tools > button:not([data-testid='record']) {
+    display: none;
+  }
+
+  .sound-tools .meter {
+    inline-size: 5rem;
+  }
+}
+
+/* Upright: the project's bar, and under it a line of its buttons; the picture, which takes the height that is left; the buttons of the
+   transport; the time and the zoom on one line; the timeline; the tabs; and one line of the tools of the chosen tab. */
+@media (max-width: 700px) and (orientation: portrait) {
+  .shell {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+  }
+
+  .project-bar {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .project-bar > .buttons {
+    grid-column: 1 / -1;
+  }
+
+  /* The tools are a line that scrolls sideways, as the project's buttons are. */
+  .tools .actions {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .tools .actions > button {
+    flex: none;
+  }
+
+  .shell > .editor {
+    display: grid;
+    flex: 1 0 auto;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: minmax(96px, 1fr) auto auto auto auto auto auto;
+    gap: 0.375rem;
+    margin: 0;
+  }
+
+  .editor > .picture {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
+
+  .transport > .buttons {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-content: center;
+  }
+
+  .transport .timecode {
+    grid-column: 1;
+    grid-row: 3;
+    font-size: 0.8rem;
+  }
+
+  .timeline-block .zoom {
+    grid-column: 2;
+    grid-row: 3;
+  }
+
+  .timeline-block .timeline {
+    grid-column: 1 / -1;
+    grid-row: 4;
+  }
+
+  .editor > .tool-tabs {
+    grid-column: 1 / -1;
+    grid-row: 5;
+  }
+
+  .editor > .tools {
+    display: block;
+    grid-column: 1 / -1;
+    grid-row: 6;
+    min-width: 0;
+  }
+
+  .editor > .notice {
+    grid-column: 1 / -1;
+    grid-row: 7;
+    min-height: 0;
+  }
+
+  .editor > p[role='alert'] {
+    grid-column: 1 / -1;
+    grid-row: 8;
+  }
+}
+
+/* On its side: the project's bar along the top; the picture on the left, with the time on it; on the right the tabs, the tools of the
+   chosen tab (which scroll up and down if they are more than fit) and the transport; and along the bottom the zoom, one button
+   over the other, and the timeline. What the page has to tell, a notice or the progress of an import, is laid over the picture, as
+   there is no row to spare for it. */
+@media (pointer: coarse) and (max-height: 520px) and (orientation: landscape) {
+  .shell {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: auto auto minmax(44px, 1fr) auto auto;
+    gap: 0.25rem 0.5rem;
+  }
+
+  .project-bar {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    grid-template-columns: auto fit-content(18rem) minmax(0, 1fr);
+  }
+
+  .shell > .editor {
+    display: contents;
+  }
+
+  .editor > .picture {
+    grid-column: 1 / 3;
+    grid-row: 2 / 5;
+  }
+
+  .transport .timecode,
+  .shell > [role='status'],
+  .shell > [role='alert'],
+  .shell > .problems,
+  .editor > .notice,
+  .editor > p[role='alert'] {
+    grid-column: 1 / 3;
+    grid-row: 2 / 5;
+    z-index: 3;
+    margin: 0.25rem;
+  }
+
+  .transport .timecode {
+    align-self: end;
+    justify-self: start;
+    padding: 0 0.375rem;
+    border-radius: 0.25rem;
+    background: rgb(0 0 0 / 0.65);
+    color: #fff;
+    font-size: 0.75rem;
+  }
+
+  .shell > [role='status'],
+  .shell > [role='alert'],
+  .shell > .problems,
+  .editor > .notice,
+  .editor > p[role='alert'] {
+    align-self: start;
+    justify-self: center;
+    max-width: calc(100% - 0.5rem);
+    min-height: 0;
+    padding: 0;
+  }
+
+  .shell > [role='status']:not(:empty),
+  .shell > [role='alert'],
+  .shell > .problems,
+  .editor > .notice:not(:empty),
+  .editor > p[role='alert'] {
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.375rem;
+    background: var(--background);
+  }
+
+  .editor > .tool-tabs {
+    grid-column: 3;
+    grid-row: 2;
+  }
+
+  /* The tools take the height that is left and scroll in it: their own height is not counted in the row, or they would push the
+     picture and the timeline down the page, which is what the row is for. */
+  .editor > .tools {
+    display: block;
+    grid-column: 3;
+    grid-row: 3;
+    contain: size;
+    min-width: 0;
+    overflow-y: auto;
+  }
+
+  .tools .actions > button {
+    padding-inline: 0.625rem;
+  }
+
+  .transport > .buttons {
+    grid-column: 3;
+    grid-row: 4;
+    justify-content: center;
+  }
+
+  .timeline-block .zoom {
+    flex-direction: column;
+    grid-column: 1;
+    grid-row: 5;
+    justify-content: center;
+  }
+
+  .timeline-block .timeline {
+    grid-column: 2 / -1;
+    grid-row: 5;
+  }
+}

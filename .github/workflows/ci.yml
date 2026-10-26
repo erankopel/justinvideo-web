@@ -1,0 +1,116 @@
+name: CI
+
+# For the dedicated web repository (public, so its Actions minutes are free). Checks the site on every push to main and every pull request: types, unit tests, the
+# build, and the browser tests in real Chromium and Firefox. The Pages deploy (pages.yml) only runs from a commit on which
+# the browser job below has passed. A job for WebKit, the engine of Safari, runs when started by hand.
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Types, tests and build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install packages
+        run: npm ci
+
+      - name: Check types
+        run: npm run typecheck
+
+      - name: Run the tests
+        run: npm test
+
+      - name: Build the site
+        run: npm run build
+
+  browsers:
+    # The deploy looks for a check run with exactly this name.
+    name: In Chromium and Firefox
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      E2E_FIREFOX: '1'
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install packages
+        run: npm ci
+
+      - name: Install the browsers
+        run: npx playwright install --with-deps chromium firefox
+
+      - name: Run the tests in the browsers
+        run: npm run test:e2e
+
+      - name: Keep the traces of failed tests
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: playwright-traces
+          path: test-results
+          retention-days: 7
+
+  webkit:
+    # The engine of Safari, as Playwright builds it for Linux. It has less in it than Safari, so what it cannot do is skipped
+    # in the tests, with the reason, and the rest is run. It runs only when started by hand (Actions, CI, Run workflow) and
+    # before a release, to save Actions minutes; the deploy does not wait for it.
+    name: In WebKit
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      E2E_WEBKIT: '1'
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install packages
+        run: npm ci
+
+      - name: Install the browser
+        run: npx playwright install --with-deps webkit
+
+      - name: Run the tests in WebKit
+        run: npx playwright test --project=webkit
+
+      - name: Keep the traces of failed tests
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: playwright-traces-webkit
+          path: test-results
+          retention-days: 7

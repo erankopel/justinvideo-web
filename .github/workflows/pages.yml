@@ -1,0 +1,73 @@
+name: Deploy to GitHub Pages
+
+# For the dedicated web repository (public). Started by hand, so a push never changes the live site by itself, and by default
+# only from a commit on which the browser tests have passed (the CI workflow runs on every push; tick the box below to deploy
+# without that check). Pages must be set to build from GitHub Actions in the repository settings, with the custom domain
+# video.medicom.vip set there too.
+
+on:
+  workflow_dispatch:
+    inputs:
+      without_browser_tests:
+        description: Publish even though the browser tests have not passed on this commit
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  checks: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Build and publish
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Check that the browser tests passed on this commit
+        if: ${{ !inputs.without_browser_tests }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          result=$(gh api "repos/${{ github.repository }}/commits/${{ github.sha }}/check-runs" \
+            --jq '[.check_runs[] | select(.name == "In Chromium and Firefox")] | map(.conclusion) | first // "none"')
+          if [ "$result" != "success" ]; then
+            echo "The browser tests have not passed on this commit (they say: $result). Run the CI workflow on it first."
+            exit 1
+          fi
+
+      - name: Set up Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install, test and build
+        env:
+          # The build that goes live: it stops while the privacy policy has no effective date, and has no source maps.
+          PUBLIC_BUILD: '1'
+        run: |
+          npm ci
+          npm run typecheck
+          npm test
+          npm run build
+
+      - name: Upload the site
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: dist
+
+      - name: Publish
+        id: deployment
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
